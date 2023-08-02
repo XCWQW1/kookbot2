@@ -22,7 +22,7 @@ async def plugin_transfer(function_name, plugin_dict, data=None):
                         await target_function()
 
                 except Exception as e:
-                    Log.error('error', f'调用插件报错：{e}')
+                    Log.error('error', f'调用插件 {plugin_file_path} 报错：{e}')
 
 
 async def plugins_date(plugin_dict):

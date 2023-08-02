@@ -54,9 +54,55 @@ async def test_2(data):
     API.send_channel_msg(json.dumps(json_data), 10, data['events']['channel_id'])  # 消息ID设置为10即可发送，引用无效
 
 
+# 添加回应
 @on_command('TEST-3', substring=False)
 async def test_3(data):
     API.add_reaction(data['events']['message_id'], '✅')  # 要按顺序填入消息ID和要回应的emoji或emoji ID或GuilEmoji
+
+
+# 发送按钮卡片
+@on_command('TEST-4', substring=False)
+async def test_4(data):
+    json_data = [
+        {
+            "type": "card",
+            "theme": "secondary",
+            "size": "lg",
+            "modules": [
+                {
+                    "type": "action-group",
+                    "elements": [
+                        {
+                            "type": "button",
+                            "theme": "primary",
+                            "value": "ok",
+                            "click": "return-val",
+                            "text": {
+                                "type": "plain-text",
+                                "content": "确定"
+                            }
+                        },
+                        {
+                            "type": "button",
+                            "theme": "danger",
+                            "value": "cancel",
+                            "click": "return-val",
+                            "text": {
+                                "type": "plain-text",
+                                "content": "取消"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+    API.send_channel_msg(json.dumps(json_data), 10, data['events']['channel_id'])
+
+
+# 处理按钮卡片按下
+async def message_button_click(data):
+    API.send_channel_msg(f"{data['user']['nickname']} 按下了 {data['card']['value']}", 9, data['card']['channel_id'], data['card']['message_id'])
 
 
 async def user_exit_guild(data):
