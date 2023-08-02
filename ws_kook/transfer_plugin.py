@@ -29,20 +29,20 @@ async def process_message(data, plugin_dict):
                 'online': user_online, 'bot': user_bot, 'status': user_status, 'avatar': user_avatar_url,
                 'vip_avatar': user_vip_avatar_url, 'roles': user_roles}
 
-    async def kook_server_guild(guild_json: json):
-        guild_id = guild_json['id']
-        guild_name = guild_json['name']
-        guild_topic = guild_json['topic']
-        guild_main_id = guild_json['user_id']
-        guild_icon_url = guild_json['icon']
-        guild_notify_type = guild_json['notify_type']
-        guild_region = guild_json['region']
-        guild_open = guild_json['enable_open']
-        guild_open_id = guild_json['open_id']
-        guild_default_channel_id = guild_json['default_channel_id']
-        guild_welcome_channel_id = guild_json['welcome_channel_id']
-        guild_roles = guild_json['roles']
-        guild_channels = guild_json['channels']
+    async def kook_server_server(guild_json: json):
+        server_id = guild_json['id']
+        server_name = guild_json['name']
+        server_topic = guild_json['topic']
+        server_main_id = guild_json['user_id']
+        server_icon_url = guild_json['icon']
+        server_notify_type = guild_json['notify_type']
+        server_region = guild_json['region']
+        server_open = guild_json['enable_open']
+        server_open_id = guild_json['open_id']
+        server_default_channel_id = guild_json['default_channel_id']
+        server_welcome_channel_id = guild_json['welcome_channel_id']
+        server_roles = guild_json['roles']
+        server_channels = guild_json['channels']
 
     async def kook_channel_json(channel_json: json):
         channel_id = channel_json['id']
@@ -104,12 +104,12 @@ async def process_message(data, plugin_dict):
             events_author = None
 
         return {'events': {
-                     'channel_type': events_channel_type, 'type': events_type, 'server_id': events_server_id,
-                     'author_id': events_author_id, 'content': events_content, 'message': events_message,
-                     'message_id': events_message_id, 'msg_timestamp': events_message_timestamp, 'nonce': events_nonce,
-                     'extra': events_extra, 'channel_id': events_channel_id, 'channel_name': events_channel_name},
-                'user': events_author
-                }
+            'channel_type': events_channel_type, 'type': events_type, 'server_id': events_server_id,
+            'author_id': events_author_id, 'content': events_content, 'message': events_message,
+            'message_id': events_message_id, 'msg_timestamp': events_message_timestamp, 'nonce': events_nonce,
+            'extra': events_extra, 'channel_id': events_channel_id, 'channel_name': events_channel_name},
+            'user': events_author
+        }
 
     async def extra_txt(extra_json: json):
         extra_txt_type = extra_json['type']
@@ -138,33 +138,33 @@ async def process_message(data, plugin_dict):
                      'user_id': extra_card_user_id, 'channel_type': extra_card_channel_type,
                      'channel_id': extra_card_channel_id, 'user_info': extra_card_user_info}, 'user': user_json}
 
-    async def extra_exit_guild(kook_data: json):
-        extra_exit_guild_user_id = kook_data['extra']['body']['user_id']
-        extra_exit_guild_exit_at = kook_data['extra']['body']['exited_at']
-        extra_exit_guild_channel_id = kook_data['target_id']
-        return {'exit_guild': {'user_id': extra_exit_guild_user_id, 'exit_at': extra_exit_guild_exit_at,
-                               'server_id': extra_exit_guild_channel_id}}
+    async def extra_exit_server(kook_data: json):
+        extra_exit_server_user_id = kook_data['extra']['body']['user_id']
+        extra_exit_server_exit_at = kook_data['extra']['body']['exited_at']
+        extra_exit_server_channel_id = kook_data['target_id']
+        return {'exit_server': {'user_id': extra_exit_server_user_id, 'exit_at': extra_exit_server_exit_at,
+                                'server_id': extra_exit_server_channel_id}}
 
-    async def extra_join_guild(kook_data: json):
-        extra_join_guild_user_id = kook_data['extra']['body']['user_id']
-        extra_join_guild_join_at = kook_data['extra']['body']['joined_at']
-        extra_join_guild_channel_id = kook_data['target_id']
-        return {'join_guild': {'user_id': extra_join_guild_user_id, 'join_at': extra_join_guild_join_at,
-                               'guild_id': extra_join_guild_channel_id}}
+    async def extra_join_server(kook_data: json):
+        extra_join_server_user_id = kook_data['extra']['body']['user_id']
+        extra_join_server_join_at = kook_data['extra']['body']['joined_at']
+        return {'join_server': {'join_at': extra_join_server_join_at,
+                                'server_id': extra_join_server_user_id}}
 
-    async def extra_self_exit_guild(kook_data: json):
-        extra_self_exit_guild_user_id = kook_data['extra']['body']['user_id']
-        extra_self_exit_guild_exit_at = kook_data['extra']['body']['exited_at']
-        extra_self_exit_guild_channel_id = kook_data['target_id']
-        return {'self_exit_guild': {'user_id': extra_self_exit_guild_user_id, 'exit_at': extra_self_exit_guild_exit_at,
-                                    'guild_id': extra_self_exit_guild_channel_id}}
+    async def extra_self_exit_server(kook_data: json):
+        extra_self_exit_server_server_id = kook_data['extra']['body']['guild_id']
+        extra_self_exit_server_exit_at = kook_data['extra']['body']['exited_at']
+        return {
+            'self_exit_server': {'exit_at': extra_self_exit_server_exit_at,
+                                 'server_id': extra_self_exit_server_server_id}}
 
-    async def extra_self_join_guild(kook_data: json):
-        extra_self_join_guild_user_id = kook_data['extra']['body']['user_id']
-        extra_self_join_guild_join_at = kook_data['extra']['body']['joined_at']
-        extra_self_join_guild_channel_id = kook_data['target_id']
-        return {'self_join_guild': {'user_id': extra_self_join_guild_user_id, 'join_at': extra_self_join_guild_join_at,
-                                    'guild_id': extra_self_join_guild_channel_id}}
+    async def extra_self_join_server(kook_data: json):
+        extra_self_join_server_server_id = kook_data['extra']['body']['guild_id']
+        extra_self_join_server_join_at = kook_data['extra']['body']['joined_at']
+        extra_self_join_server_channel_id = kook_data['target_id']
+        return {
+            'self_join_server': {'user_id': extra_self_join_server_server_id, 'join_at': extra_self_join_server_join_at,
+                                 'server_id': extra_self_exit_server_server_id}}
 
     events_data = await events(data['d'])
 
@@ -200,25 +200,25 @@ async def process_message(data, plugin_dict):
         # 有用户加入服务器
         if events_data['events']['channel_type'] == 'GROUP' and events_data['events']['type'] == 255 and \
                 events_data['events']['extra']['type'] == 'joined_guild':
-            join_json = await extra_join_guild(data['d'])
+            join_json = await extra_join_server(data['d'])
             await plugin_transfer('user_join_guild', plugin_dict, join_json)
 
         # 有用户退出服务器
         if events_data['events']['channel_type'] == 'GROUP' and events_data['events']['type'] == 255 and \
                 events_data['events']['extra']['type'] == 'exited_guild':
-            exit_json = await extra_exit_guild(data['d'])
+            exit_json = await extra_exit_server(data['d'])
             await plugin_transfer('user_exit_guild', plugin_dict, exit_json)
 
         # 自己加入服务器
         if events_data['events']['channel_type'] == 'PERSON' and events_data['events']['type'] == 255 and \
                 events_data['events']['extra']['type'] == 'self_joined_guild':
-            join_json = await extra_self_join_guild(data['d'])
+            join_json = await extra_self_join_server(data['d'])
             await plugin_transfer('user_self_join_guild', plugin_dict, join_json)
 
         # 自己退出服务器
         if events_data['events']['channel_type'] == 'PERSON' and events_data['events']['type'] == 255 and \
                 events_data['events']['extra']['type'] == 'self_exited_guild':
-            exit_json = await extra_self_exit_guild(data['d'])
+            exit_json = await extra_self_exit_server(data['d'])
             await plugin_transfer('user_self_exit_guild', plugin_dict, exit_json)
 
         # 卡片消息按钮点击
@@ -231,8 +231,10 @@ async def process_message(data, plugin_dict):
         for func in function_records:
             if function_records[func]['substring_bool']:
                 if len(events_data['events']['message']) > function_records[func]['substring_num'] and \
-                        events_data['events']['message'][:function_records[func]['substring_num']] == str(function_records[func]['command']):
-                    await function_records[func]['function'](events_data, events_data['events']['message'].split(function_records[func]['command'])[1])
+                        events_data['events']['message'][:function_records[func]['substring_num']] == str(
+                    function_records[func]['command']):
+                    await function_records[func]['function'](events_data, events_data['events']['message'].split(
+                        function_records[func]['command'])[1])
             else:
                 if events_data['events']['message'] == str(function_records[func]['command']):
                     await function_records[func]['function'](events_data)
