@@ -19,8 +19,7 @@
 
 - ### 1, 克隆本项目
   ```
-  git clone https://github.com/XCWQW1/XCBOT-KOOK.git
-  cd XCBOT-KOOK
+  git clone https://github.com/XCWQW1/kookbot2.git
   ```
 
 
