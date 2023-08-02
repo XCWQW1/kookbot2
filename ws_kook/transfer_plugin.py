@@ -148,23 +148,22 @@ async def process_message(data, plugin_dict):
     async def extra_join_server(kook_data: json):
         extra_join_server_user_id = kook_data['extra']['body']['user_id']
         extra_join_server_join_at = kook_data['extra']['body']['joined_at']
-        return {'join_server': {'join_at': extra_join_server_join_at,
-                                'server_id': extra_join_server_user_id}}
+        extra_exit_server_channel_id = kook_data['target_id']
+        return {'join_server': {'user_id': extra_join_server_user_id, 'join_at': extra_join_server_join_at,
+                                'server_id': extra_exit_server_channel_id}}
 
     async def extra_self_exit_server(kook_data: json):
         extra_self_exit_server_server_id = kook_data['extra']['body']['guild_id']
         extra_self_exit_server_exit_at = kook_data['extra']['body']['exited_at']
         return {
-            'self_exit_server': {'exit_at': extra_self_exit_server_exit_at,
-                                 'server_id': extra_self_exit_server_server_id}}
+            'self_exit_server': {'server_id': extra_self_exit_server_server_id}
+        }
 
     async def extra_self_join_server(kook_data: json):
         extra_self_join_server_server_id = kook_data['extra']['body']['guild_id']
-        extra_self_join_server_join_at = kook_data['extra']['body']['joined_at']
-        extra_self_join_server_channel_id = kook_data['target_id']
         return {
-            'self_join_server': {'user_id': extra_self_join_server_server_id, 'join_at': extra_self_join_server_join_at,
-                                 'server_id': extra_self_exit_server_server_id}}
+            'self_join_server': {'server_id': extra_self_join_server_server_id}
+        }
 
     events_data = await events(data['d'])
 
