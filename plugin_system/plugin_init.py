@@ -1,6 +1,7 @@
-import importlib
 import os
+import sys
 import inspect
+import importlib
 import importlib.util
 
 from colorama import init
@@ -33,7 +34,10 @@ async def get_plugins_functions_and_def():
     plugin_dnf_list = {}
     get_find_plugins_list = await find_plugin()
     for file_path in get_find_plugins_list:
-        name = file_path.split('plugins/')[1].replace('.py', '')
+        if sys.platform.startswith("win32"):
+            name = file_path.split('plugins\\')[1].replace('.py', '')
+        else:
+            name = file_path.split('plugins/')[1].replace('.py', '')
         Log.initialize(f'找到插件：{name}')
         def_ls = await get_functions_from_file(file_path)
         plugin_dnf_list[plugin_num] = {'name': name, 'file_path': file_path, 'def': def_ls}
