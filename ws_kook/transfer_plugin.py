@@ -232,8 +232,7 @@ async def process_message(data, plugin_dict):
             if function_records[func]['substring_bool']:
                 if len(events_data['events']['message']) > function_records[func]['substring_num'] and \
                         events_data['events']['message'][:function_records[func]['substring_num']] == str(function_records[func]['command']):
-                    await function_records[func]['function'](events_data, events_data['events']['message'].split(
-                        function_records[func]['command'])[1])
+                    await function_records[func]['function'](events_data, events_data['events']['message'].split(function_records[func]['command'])[1])
             else:
                 if events_data['events']['message'] == str(function_records[func]['command']):
                     await function_records[func]['function'](events_data)

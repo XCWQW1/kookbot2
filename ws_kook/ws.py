@@ -1,5 +1,6 @@
 import asyncio
 import configparser
+import threading
 import time
 import traceback
 import zlib
@@ -8,12 +9,11 @@ import sys
 
 import websockets
 from API.api_log import Log
+from ws_kook.gateway import get_ws
 from API.api_load_config import load_config
 from plugin_system.plugin_init import get_plugins_functions_and_def
 from plugin_system.plugin_transfer import plugin_transfer
 from .transfer_plugin import process_message
-
-from ws_kook.gateway import get_ws
 
 
 link_status = 1
@@ -85,26 +85,6 @@ async def connect_to_kook_server():
             message = {"s": 2, "sn": new_sn}  # 要发送的消息
             await websocket.send(json.dumps(message))
 
-            try:
-                # 接收返回消息，设置超时时间为6秒
-                response = await asyncio.wait_for(websocket.recv(), timeout=6)  # 等待6秒钟
-                print(response)
-            except asyncio.TimeoutError:
-                Log.error('error', f'30秒一次的ping时没有收到pong，正在指数回退 2 秒后重试')
-                await asyncio.sleep(2)
-                await websocket.send(json.dumps(message))
-                try:
-                    await asyncio.wait_for(websocket.pong(), timeout=6)  # 等待6秒钟
-                except asyncio.TimeoutError:
-                    Log.error('error', f'第一次重ping没有收到pong，正在指数回退 4 秒后重试')
-                    await asyncio.sleep(4)
-                    await websocket.send(json.dumps(message))
-                    try:
-                        await asyncio.wait_for(websocket.pong(), timeout=6)  # 等待6秒钟
-                    except asyncio.TimeoutError:
-                        link_status = 2
-                        try_link = True
-                        break
 
             # 等待30秒后再次发送
             await asyncio.sleep(30)
