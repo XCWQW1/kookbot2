@@ -105,19 +105,19 @@ async def message_button_click(data):
     API.send_channel_msg(f"{data['user']['nickname']} 按下了 {data['card']['value']}", 9, data['card']['channel_id'], data['card']['message_id'])
 
 
-async def user_exit_guild(data):
+async def user_exit_server(data):
     pass  # 累了 有时间在写 当有用户退出服务器会调用这个函数
 
 
-async def user_join_guild(data):
+async def user_join_server(data):
     pass  # 同上，有人加入服务器调用
 
 
-async def user_self_exit_guild(data):
+async def user_self_exit_server(data):
     pass  # 自己退出服务器会调用这个函数
 
 
-async def user_self_join_guild(data):
+async def user_self_join_server(data):
     pass  # 同上，自己加入服务器调用
 
 
