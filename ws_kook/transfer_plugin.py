@@ -154,7 +154,6 @@ async def process_message(data, plugin_dict):
 
     async def extra_self_exit_server(kook_data: json):
         extra_self_exit_server_server_id = kook_data['extra']['body']['guild_id']
-        extra_self_exit_server_exit_at = kook_data['extra']['body']['exited_at']
         return {
             'self_exit_server': {'server_id': extra_self_exit_server_server_id}
         }
@@ -200,25 +199,25 @@ async def process_message(data, plugin_dict):
         if events_data['events']['channel_type'] == 'GROUP' and events_data['events']['type'] == 255 and \
                 events_data['events']['extra']['type'] == 'joined_guild':
             join_json = await extra_join_server(data['d'])
-            await plugin_transfer('user_join_guild', plugin_dict, join_json)
+            await plugin_transfer('user_join_server', plugin_dict, join_json)
 
         # 有用户退出服务器
         if events_data['events']['channel_type'] == 'GROUP' and events_data['events']['type'] == 255 and \
                 events_data['events']['extra']['type'] == 'exited_guild':
             exit_json = await extra_exit_server(data['d'])
-            await plugin_transfer('user_exit_guild', plugin_dict, exit_json)
+            await plugin_transfer('user_exit_server', plugin_dict, exit_json)
 
         # 自己加入服务器
         if events_data['events']['channel_type'] == 'PERSON' and events_data['events']['type'] == 255 and \
                 events_data['events']['extra']['type'] == 'self_joined_guild':
             join_json = await extra_self_join_server(data['d'])
-            await plugin_transfer('user_self_join_guild', plugin_dict, join_json)
+            await plugin_transfer('user_self_join_server', plugin_dict, join_json)
 
         # 自己退出服务器
         if events_data['events']['channel_type'] == 'PERSON' and events_data['events']['type'] == 255 and \
                 events_data['events']['extra']['type'] == 'self_exited_guild':
             exit_json = await extra_self_exit_server(data['d'])
-            await plugin_transfer('user_self_exit_guild', plugin_dict, exit_json)
+            await plugin_transfer('user_self_exit_server', plugin_dict, exit_json)
 
         # 卡片消息按钮点击
         if events_data['events']['channel_type'] == 'PERSON' and events_data['events']['type'] == 255 and \
