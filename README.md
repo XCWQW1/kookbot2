@@ -25,7 +25,7 @@
 
 - ### 2, 安装所需库
 
-  ```pip install -r requirements.txt``` 
+  进入克隆后的目录执行```pip install -r requirements.txt``` 
 
 - ### 3, 创建或使用已有的KOOK机器人
   
