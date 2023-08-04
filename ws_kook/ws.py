@@ -1,6 +1,5 @@
 import asyncio
 import configparser
-import threading
 import time
 import traceback
 import zlib
@@ -22,6 +21,7 @@ session_id = ''
 sn = 1
 wait_json = []
 try_link = False
+init_stats = False
 
 
 #################################################
@@ -35,6 +35,7 @@ async def connect_to_kook_server():
     global session_id
     global sn
     global wait_json
+    global init_stats
 
     plugin_list = await get_plugins_functions_and_def()
     kook_token, kook_token_type = load_config()
@@ -85,7 +86,6 @@ async def connect_to_kook_server():
             message = {"s": 2, "sn": new_sn}  # 要发送的消息
             await websocket.send(json.dumps(message))
 
-
             # 等待30秒后再次发送
             await asyncio.sleep(30)
 
@@ -118,9 +118,13 @@ async def connect_to_kook_server():
                             Log.initialize(
                                 f'接收到了kook传回的HELLO包，判断为连接成功，获取到的会话ID为：{data["d"]["session_id"]}')
                             session_id = data["d"]["session_id"]
-                            Log.initialize('正在初始化所有插件...')
-                            await plugin_transfer('on_init', plugin_list)
-                            Log.initialize('初始化所有插件完成！')
+                            if not init_stats:
+                                Log.initialize('正在初始化所有插件...')
+                                await plugin_transfer('on_init', plugin_list)
+                                init_stats = True
+                                Log.initialize('初始化所有插件完成！')
+                            else:
+                                Log.initialize('初始化已经执行过一次了，跳过初始化')
 
                             if sleep_time != 0:
                                 sleep_time = 0
