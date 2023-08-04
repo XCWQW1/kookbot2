@@ -7,6 +7,15 @@ from API.decorator.command import on_command
 API = KOOKApi()
 API_CARD = Card()
 
+# 下面是元数据，以后会用到目前不写也行
+PLUGIN_DATE = {
+    'name': 'test-插件',
+    "author": "test-作者",
+    'version': '1.0.0',
+    "description": "test-简介",
+    "dependencies": {}
+}
+
 
 # 有时间我会写个文档挂github去，不知道data的内容可以直接print出来看，是个字典
 # 注册指令

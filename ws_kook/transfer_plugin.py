@@ -3,7 +3,7 @@ import json
 from API.decorator.command import function_records
 from API.api_kook import load_config, KOOKApi
 from API.api_log import Log
-from plugin_system.plugin_transfer import plugin_transfer
+from plugin_system.plugin_transfer import plugin_transfer, plugin_data_list
 
 
 async def process_message(data, plugin_dict):

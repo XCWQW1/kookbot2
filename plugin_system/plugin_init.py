@@ -6,6 +6,7 @@ import importlib.util
 
 from colorama import init
 from API.api_log import Log
+from .plugin_transfer import plugins_date
 
 # 初始化colorama
 init()
@@ -18,12 +19,16 @@ async def find_plugin():
 
 
 async def get_functions_from_file(file_path):
-    module_name = inspect.getmodulename(file_path)
-    spec = importlib.util.spec_from_file_location(module_name, file_path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    try:
+        module_name = inspect.getmodulename(file_path)
+        spec = importlib.util.spec_from_file_location(module_name, file_path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
 
-    functions = [name for name, obj in inspect.getmembers(module) if inspect.isfunction(obj)]
+        functions = [name for name, obj in inspect.getmembers(module) if inspect.isfunction(obj)]
+    except Exception as e:
+        Log.error('error', f'获取插件 {file_path} 中的函数出错：{e}')
+        functions = None
 
     return functions
 
@@ -43,4 +48,5 @@ async def get_plugins_functions_and_def():
         plugin_dnf_list[plugin_num] = {'name': name, 'file_path': file_path, 'def': def_ls}
         plugin_num = plugin_num + 1
     Log.initialize(f'寻找完毕，共计 {plugin_num} 个插件')
+    await plugins_date(plugin_dnf_list)
     return plugin_dnf_list
