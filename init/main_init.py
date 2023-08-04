@@ -1,10 +1,15 @@
+
 def main_init():
     # 监测配置文件夹是否存在
     import configparser
     import os
     import sys
 
+    from node_init import node_init
     from API.api_log import LogSP
+
+    # init node
+    node_init()
 
     folders = ['plugins', 'logs', 'errors', 'config']
 
