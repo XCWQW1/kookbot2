@@ -2,9 +2,13 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var appConfig = require("./appConfig")
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+
+// initialize the node server configuration with the appConfig.json file
+Object.assign(process.env, appConfig)
 
 var app = express();
 
