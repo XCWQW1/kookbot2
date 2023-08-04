@@ -1,14 +1,16 @@
+import asyncio
 import importlib
 
 from API.api_log import Log
 
 
 async def plugin_transfer(function_name, plugin_dict, data=None):
-    if plugin_dict != {}:
+    if plugin_dict:
         for plugin_key, plugin_date in plugin_dict.items():
             plugin_name = plugin_date['name']
             plugin_def = plugin_date['def']
             plugin_file_path = plugin_date['file_path']
+
             if function_name in plugin_def:
                 try:
                     spec = importlib.util.spec_from_file_location(function_name, plugin_file_path)
@@ -16,10 +18,14 @@ async def plugin_transfer(function_name, plugin_dict, data=None):
                     spec.loader.exec_module(module)
 
                     target_function = getattr(module, function_name)
+
                     if data is not None:
-                        await target_function(data)
+                        task = asyncio.create_task(target_function(data))
                     else:
-                        await target_function()
+                        task = asyncio.create_task(target_function())
+
+                    # 在后台运行任务对象，不堵塞自身
+                    await asyncio.sleep(0)
 
                 except Exception as e:
                     Log.error('error', f'调用插件 {plugin_file_path} 报错：{e}')
