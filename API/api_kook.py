@@ -79,7 +79,7 @@ class KOOKApi:
         response = requests.get(url, headers=headers, params=get_data).json()
         return response
 
-    def send_channel_msg(self, send_msg: str or json, msg_type: int, channel_id: int, quote: Optional[str] = None) -> str:
+    def send_channel_msg(self, send_msg: str or json, msg_type: Optional[int] = 9, channel_id: Optional[int] = None, quote: Optional[str] = None) -> str:
         """
         给指定频道发送指定消息
         :param quote:  # 要引用的消息ID，可以为空，空则不引用直接发送
@@ -103,6 +103,41 @@ class KOOKApi:
             }
 
         request = self.kook_http_api_post("/api/v3/message/create", post_data)
+
+        if request['code'] == 0:
+            if msg_type == 1:
+                Log.send(msg_type, send_msg, channel_id, request['data']['msg_id'])
+            else:
+                Log.send(msg_type, send_msg, channel_id, request['data']['msg_id'])
+            return request['data']['msg_id']
+        else:
+            print(request)
+            return request['code']
+
+    def send_direct_msg(self, send_msg: str or json, msg_type: Optional[int] = 9, user_id: Optional[int] = None, quote: Optional[str] = None) -> str:
+        """
+        发送私聊消息
+        :param send_msg:  要发送的消息
+        :param msg_type:   消息类型默认9
+        :param user_id:   发送的用户id
+        :param quote:  引用消息的id
+        :return:
+        """
+        if quote is None:
+            post_data = {
+                "type": msg_type,
+                "target_id": user_id,
+                "content": send_msg
+            }
+        else:
+            post_data = {
+                "type": msg_type,
+                "target_id": user_id,
+                "content": send_msg,
+                "quote": quote
+            }
+
+        request = self.kook_http_api_post("/api/v3/direct-message/create", post_data)
 
         if request['code'] == 0:
             if msg_type == 1:

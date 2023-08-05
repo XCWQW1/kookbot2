@@ -32,6 +32,7 @@ async def test_0(data):
 @on_command('TEST ', substring=[True, 5])
 async def test_0(data, msg):  # data 和上面的一样，msg是除去触发词 TEST  后的内容空格也去了
     API.send_channel_msg(msg, 1, data['events']['channel_id'], data['events']['message_id'])
+    API.send_direct_msg(msg, 9, data['user']['id'])
 
 
 # 发图
