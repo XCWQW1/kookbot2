@@ -1,8 +1,10 @@
+import functools
 import os
 import sys
 import inspect
 import importlib
 import importlib.util
+import traceback
 
 from colorama import init
 from API.api_log import Log
@@ -25,9 +27,19 @@ async def get_functions_from_file(file_path):
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
 
-        functions = [name for name, obj in inspect.getmembers(module) if inspect.isfunction(obj)]
+        functions = {}
+        for name, obj in inspect.getmembers(module):
+            try:
+                if inspect.iscoroutinefunction(obj):  # 判断是否为协程函数
+                    coro_func = functools.partial(obj)  # 使用偏函数包装协程函数
+                    coro_func.__name__ = name  # 设置偏函数的名称为原始函数名称
+                    functions[name] = coro_func
+                elif inspect.isfunction(obj):  # 判断是否为普通函数
+                    functions[name] = obj
+            except:
+                pass
     except Exception as e:
-        Log.error('error', f'获取插件 {file_path} 中的函数出错：{e}')
+        Log.error('error', f'记录插件 {file_path} 中的函数出错：{traceback.format_exc()}')
         functions = None
 
     return functions

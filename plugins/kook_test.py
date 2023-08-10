@@ -1,3 +1,4 @@
+import asyncio
 import json
 
 from API.api_kook import KOOKApi
@@ -31,6 +32,7 @@ async def test_0(data):
 # 取最左边5个字
 @on_command('TEST ', substring=[True, 5])
 async def test_0(data, msg):  # data 和上面的一样，msg是除去触发词 TEST  后的内容空格也去了
+    await asyncio.sleep(5)
     API.send_channel_msg(msg, 1, data['events']['channel_id'], data['events']['message_id'])
     API.send_direct_msg(msg, 9, data['user']['id'])
 
@@ -112,6 +114,7 @@ async def test_4(data):
 
 # 处理按钮卡片按下
 async def message_button_click(data):
+    await asyncio.sleep(5)
     API.send_channel_msg(f"{data['user']['nickname']} 按下了 {data['card']['value']}", 9, data['card']['channel_id'], data['card']['message_id'])
 
 

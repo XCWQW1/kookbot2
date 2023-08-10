@@ -1,9 +1,11 @@
+import asyncio
 import json
+import traceback
 
 from API.decorator.command import function_records
 from API.api_kook import load_config, KOOKApi
 from API.api_log import Log
-from plugin_system.plugin_transfer import plugin_transfer, plugin_data_list
+from plugin_system.plugin_transfer import plugin_transfer
 
 
 async def process_message(data, plugin_dict):
@@ -226,13 +228,24 @@ async def process_message(data, plugin_dict):
             await plugin_transfer('message_button_click', plugin_dict, plugin_data_card)
 
         # 调用注册过的命令
+        plugin_dict_remake = {}
+        for plugin_dict_r in plugin_dict:
+            plugin_dict_remake[plugin_dict[plugin_dict_r]['name']] = plugin_dict[plugin_dict_r]
+
         for func in function_records:
-            if function_records[func]['substring_bool']:
-                if len(events_data['events']['message']) > function_records[func]['substring_num'] and \
-                        events_data['events']['message'][:function_records[func]['substring_num']] == str(
-                    function_records[func]['command']):
-                    await function_records[func]['function'](events_data, events_data['events']['message'].split(
-                        function_records[func]['command'])[1])
-            else:
-                if events_data['events']['message'] == str(function_records[func]['command']):
-                    await function_records[func]['function'](events_data)
+            for com_list in function_records[func]:
+                if com_list in events_data['events']['message']:
+                    if function_records[func][com_list]['substring_bool']:
+                        if len(events_data['events']['message']) > function_records[func][com_list]['substring_num'] and \
+                                events_data['events']['message'][:function_records[func][com_list]['substring_num']] == str(function_records[func][com_list]['command']):
+                            try:
+                                task = asyncio.create_task(plugin_dict_remake[func]['def'][function_records[func][com_list]['func_name']](events_data, events_data['events']['message'].split(function_records[func][com_list]['command'])[1]))
+                            except:
+                                Log.error('error', f'调用已注册 {function_records[func][com_list]["command"]} 指令报错：{traceback.format_exc()}')
+                    else:
+                        if events_data['events']['message'] == str(function_records[func][com_list]['command']):
+                            try:
+                                task = asyncio.create_task(plugin_dict_remake[func]['def'][function_records[func][com_list]['func_name']](events_data))
+                            except:
+                                Log.error('error', f'调用已注册 {function_records[func][com_list]["command"]} 指令报错：{traceback.format_exc()}')
+
