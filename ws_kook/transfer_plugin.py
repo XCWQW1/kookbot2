@@ -168,7 +168,7 @@ async def process_message(data, plugin_dict):
 
     events_data = await events(data['d'])
 
-    Log.accepted_info(events_data)
+    await Log.accepted_info(events_data)
 
     # 传入原始json
     await plugin_transfer('kook_json', plugin_dict, data)

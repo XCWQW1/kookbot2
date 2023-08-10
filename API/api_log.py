@@ -62,13 +62,13 @@ class Log:
     # @是防止第一个变量输入为self
     # 正常信息
     @staticmethod
-    def accepted_info(data):
+    async def accepted_info(data):
         from API.api_kook import KOOKApi
         msg_type = data['events']['type']
         channel_type = data['events']['channel_type']
         target_id = data['events']['server_id']
         if target_id is not None:
-            target_name = KOOKApi().get_server_name(target_id)
+            target_name = await KOOKApi().get_server_name(target_id)
         else:
             target_name = None
         guild_id = data['events']['channel_id']
