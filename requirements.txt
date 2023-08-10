@@ -11,6 +11,4 @@ art>=5.9
 zlib>=1.2.13
 websockets>=11.0.3
 peewee>=3.16.2
-pillow>=9.5.0
 aiohttp>=3.8.4
-plotly>=5.14.1
