@@ -22,6 +22,7 @@ sn = 1
 wait_json = []
 try_link = False
 init_stats = False
+ping_stats = False
 
 
 #################################################
@@ -36,6 +37,7 @@ async def connect_to_kook_server():
     global sn
     global wait_json
     global init_stats
+    global ping_stats
 
     plugin_list = await get_plugins_functions_and_def()
     kook_token, kook_token_type = load_config()
@@ -78,13 +80,43 @@ async def connect_to_kook_server():
     async def ping_kook(websocket):
         global link_status
         global try_link
+        global ping_stats
+        global sn
+        global wait_json
+
         while True:
             if sn == 1:
                 new_sn = 0
             else:
                 new_sn = sn - 1
-            message = {"s": 2, "sn": new_sn}  # 要发送的消息
-            await websocket.send(json.dumps(message))
+            send_message = {"s": 2, "sn": new_sn}  # 要发送的消息
+            await websocket.send(json.dumps(send_message))
+
+            w_num = 0
+            ping_stats_def = False
+            while True:
+                if w_num == 6:
+                    try:
+                        sn = 1
+                        wait_json = []
+                        link_status = 1
+                        await websocket.close()
+                    except:
+                        pass
+                    break
+                await asyncio.sleep(1)
+                if ping_stats:
+                    ping_stats = False
+                    if ping_stats_def:
+                        Log.diy_log('验活', f'第 {w_num} 次成功收到pong，复位计数器')
+                        ping_stats_def = False
+                    w_num = 0
+                    break
+                else:
+                    w_num = w_num + 1
+                    Log.error('error', f'第 {w_num} 次6秒内发送的ping没有收到pong')
+                    ping_stats_def = True
+                    await asyncio.sleep(1)
 
             # 等待30秒后再次发送
             await asyncio.sleep(30)
@@ -105,6 +137,8 @@ async def connect_to_kook_server():
                     await add_sleep_time()
             elif link_status == 2:
                 async with websockets.connect(kook_ws_url) as websocket:
+                    loop = asyncio.get_event_loop()
+                    task = loop.create_task(ping_kook(websocket))
                     async for message in websocket:
                         # DEBUG
                         # print(json.loads(zlib.decompress(message)))
@@ -112,6 +146,9 @@ async def connect_to_kook_server():
 
                         message = zlib.decompress(message)
                         data = json.loads(message)
+
+                        if data['s'] == 3:
+                            ping_stats = True
 
                         if data['s'] == 1 and data['d']['code'] == 0:
                             link_status = 3
@@ -184,7 +221,13 @@ async def connect_to_kook_server():
                                 sn = 1
 
         except Exception as e:
-            Log.error('error', f"{sleep_time} 秒后重试，框架运行出错:{e}")
-            traceback.print_exc()
+            Log.error('error', f"{sleep_time} 秒后重试，框架运行出错:{traceback.format_exc()}")
+            try:
+                sn = 1
+                wait_json = []
+                link_status = 1
+                await websocket.close()
+            except:
+                pass
             time.sleep(sleep_time)
             await add_sleep_time()

@@ -1,7 +1,6 @@
 import asyncio
 import signal
 import sys
-import threading
 import time
 
 from API.api_kook import KOOKApi
@@ -15,27 +14,11 @@ from colorama import init, Fore, Style
 init()
 
 
-def kook_bot():
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(connect_to_kook_server())
+async def kook_bot():
+    await connect_to_kook_server()
 
 
-def signal_handler(sig, frame):
-    # 释放所有线程锁
-    threading._shutdown()
-    current_time_1 = time.time()
-    now_time_1 = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(current_time_1))
-    logs = f"[{now_time_1}] [信息] 程序关闭"
-    LogSP.print_log(logs)
-    LogSP.save_log(logs)
-    KOOKApi().offline_user()
-    sys.exit(0)
-
-
-signal.signal(signal.SIGINT, signal_handler)
-
-
-if __name__ == '__main__':
+async def main():
     current_time = time.time()
     now_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(current_time))
     art_text = text2art('XCBOT')
@@ -48,5 +31,21 @@ if __name__ == '__main__':
     result = '\n'.join(art_with_time)
 
     print(Fore.GREEN + result + Style.RESET_ALL)
-    main_init()
-    kook_bot()
+    await main_init()
+    await kook_bot()
+
+
+def signal_handler(sig, frame):
+    KOOKApi().offline_user()
+    current_time_1 = time.time()
+    now_time_1 = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(current_time_1))
+    logs = f"[{now_time_1}] [信息] 程序关闭"
+    LogSP.print_log(logs)
+    LogSP.save_log(logs)
+    sys.exit(0)
+
+
+signal.signal(signal.SIGINT, signal_handler)
+
+if __name__ == '__main__':
+    asyncio.run(main())
