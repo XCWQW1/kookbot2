@@ -24,7 +24,7 @@ PLUGIN_DATE = {
 @on_command('TEST-0', substring=False)
 async def test_0(data):
     msg = 'TEST-0! Hello World!'  # 要发送的消息，此处为提升可读单独赋值给变量后发送，可以直接写到下方API的msg里
-    API.send_channel_msg(msg, 1, data['events']['channel_id'], data['events']['message_id'])  # 发送消息, channel_message_id 可不提供，不提供则不引用触发消息直接发送, 1为消息类型 详见KOOK官方文档 发送卡片时需json.dumps(json_data)
+    await API.send_channel_msg(msg, 1, data['events']['channel_id'], data['events']['message_id'])  # 发送消息, channel_message_id 可不提供，不提供则不引用触发消息直接发送, 1为消息类型 详见KOOK官方文档 发送卡片时需json.dumps(json_data)
     # API.send_channel_msg(msg, 1, data['events']['channel_id'])  # 不引用
     # API.send_channel_msg('TEST! Hello World!', 1, data['events']['channel_id'], data['events']['message_id'])  # 直接写
 
@@ -33,15 +33,15 @@ async def test_0(data):
 @on_command('TEST ', substring=[True, 5])
 async def test_0(data, msg):  # data 和上面的一样，msg是除去触发词 TEST  后的内容空格也去了
     await asyncio.sleep(5)
-    API.send_channel_msg(msg, 1, data['events']['channel_id'], data['events']['message_id'])
-    API.send_direct_msg(msg, 9, data['user']['id'])
+    await API.send_channel_msg(msg, 1, data['events']['channel_id'], data['events']['message_id'])
+    await API.send_direct_msg(msg, 9, data['user']['id'])
 
 
 # 发图
 @on_command('TEST-1', substring=False)
 async def test_1(data):
-    file_url = API.upload_files('plugins/test.png')  # 先上传文件，可是文件路径，也可是文件的二进制 返回图片链接
-    API_CARD.send_img(file_url, data['events']['channel_id'])  # 发送
+    file_url = await API.upload_files('plugins/test.png')  # 先上传文件，可是文件路径，也可是文件的二进制 返回图片链接
+    await API_CARD.send_img(file_url, data['events']['channel_id'])  # 发送
 
 
 # 自定义卡片
@@ -63,13 +63,13 @@ async def test_2(data):
             ]
         }
     ]  # 可用kook官方的卡片编辑器生成json : https://www.kookapp.cn/tools/message-builder.html#/card
-    API.send_channel_msg(json.dumps(json_data), 10, data['events']['channel_id'])  # 消息ID设置为10即可发送，引用无效
+    await API.send_channel_msg(json.dumps(json_data), 10, data['events']['channel_id'])  # 消息ID设置为10即可发送，引用无效
 
 
 # 添加回应
 @on_command('TEST-3', substring=False)
 async def test_3(data):
-    API.add_reaction(data['events']['message_id'], '✅')  # 要按顺序填入消息ID和要回应的emoji或emoji ID或GuilEmoji
+    await API.add_reaction(data['events']['message_id'], '✅')  # 要按顺序填入消息ID和要回应的emoji或emoji ID或GuilEmoji
 
 
 # 发送按钮卡片
@@ -109,13 +109,13 @@ async def test_4(data):
             ]
         }
     ]
-    API.send_channel_msg(json.dumps(json_data), 10, data['events']['channel_id'])
+    await API.send_channel_msg(json.dumps(json_data), 10, data['events']['channel_id'])
 
 
 # 处理按钮卡片按下
 async def message_button_click(data):
     await asyncio.sleep(5)
-    API.send_channel_msg(f"{data['user']['nickname']} 按下了 {data['card']['value']}", 9, data['card']['channel_id'], data['card']['message_id'])
+    await API.send_channel_msg(f"{data['user']['nickname']} 按下了 {data['card']['value']}", 9, data['card']['channel_id'], data['card']['message_id'])
 
 
 async def user_exit_server(data):
