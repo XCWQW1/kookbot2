@@ -45,7 +45,3 @@ async def main_init():
         await create_config_file(config_path)
     else:
         LogSP.initialize(f'配置文件 {config_path} 已经存在')
-
-
-# 使用 asyncio.run() 运行异步函数
-asyncio.run(main_init())

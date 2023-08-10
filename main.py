@@ -35,8 +35,12 @@ async def main():
     await kook_bot()
 
 
+async def off():
+    await KOOKApi().offline_user()
+
+
 def signal_handler(sig, frame):
-    KOOKApi().offline_user()
+    asyncio.create_task(off())
     current_time_1 = time.time()
     now_time_1 = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(current_time_1))
     logs = f"[{now_time_1}] [信息] 程序关闭"
