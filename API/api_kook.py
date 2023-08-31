@@ -332,3 +332,12 @@ class KOOKApi:
         else:
             print(request)
             return request['code']
+
+    async def get_me_info(self) -> str:
+        request = await self.kook_http_api_get("/api/v3/user/me", {})
+
+        if request['code'] == 0:
+            return request['data']
+        else:
+            print(request)
+            return request['code']
