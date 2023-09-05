@@ -1,6 +1,7 @@
 import asyncio
 import importlib
 import traceback
+import threading
 
 from API.api_log import Log
 
@@ -8,25 +9,35 @@ from API.api_log import Log
 plugin_data_list = {}
 
 
+class PluginTransferThread(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+
+    @staticmethod
+    async def plugin_transfer_thread(function_name, plugin_dict, data=None):
+        if plugin_dict:
+            for plugin_key, plugin_date in plugin_dict.items():
+                plugin_name = plugin_date['name']
+                plugin_def = plugin_date['def']
+                plugin_file_path = plugin_date['file_path']
+                if plugin_def is not None:
+                    if function_name in plugin_def:
+                        try:
+                            if data is not None:
+                                task = await asyncio.create_task(plugin_def[function_name](data))
+                            else:
+                                task = await asyncio.create_task(plugin_def[function_name]())
+
+                            # 在后台运行任务对象，不堵塞自身
+                            await asyncio.sleep(0)
+
+                        except Exception as e:
+                            Log.error('error', f'调用插件 {plugin_file_path} 报错：{traceback.format_exc()}')
+
+
 async def plugin_transfer(function_name, plugin_dict, data=None):
-    if plugin_dict:
-        for plugin_key, plugin_date in plugin_dict.items():
-            plugin_name = plugin_date['name']
-            plugin_def = plugin_date['def']
-            plugin_file_path = plugin_date['file_path']
-            if plugin_def is not None:
-                if function_name in plugin_def:
-                    try:
-                        if data is not None:
-                            task = asyncio.create_task(plugin_def[function_name](data))
-                        else:
-                            task = asyncio.create_task(plugin_def[function_name]())
-
-                        # 在后台运行任务对象，不堵塞自身
-                        await asyncio.sleep(0)
-
-                    except Exception as e:
-                        Log.error('error', f'调用插件 {plugin_file_path} 报错：{traceback.format_exc()}')
+    plugin_thread = PluginTransferThread()
+    await plugin_thread.plugin_transfer_thread(function_name, plugin_dict, data)
 
 
 async def plugins_date(plugin_dict):
