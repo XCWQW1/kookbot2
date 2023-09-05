@@ -12,21 +12,22 @@ task_queue = queue.Queue()
 
 
 class PluginTransferThread(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self, daemon=True)
-        self.queue = queue.Queue()
+    def __init__(self, queue_in):
+        threading.Thread.__init__(self)
+        self.queue = queue_in
 
     def run(self):
         while True:
             # 从队列中获取任务并执行
             task = self.queue.get()
             if task is None:
-                break
-            try:
-                asyncio.run(self.plugin_transfer_thread(*task))
-            except Exception as e:
-                Log.error('error', f'执行插件任务报错：{traceback.format_exc()}')
-            self.queue.task_done()
+                pass
+            else:
+                try:
+                    asyncio.run(self.plugin_transfer_thread(*task))
+                except Exception as e:
+                    Log.error('error', f'执行插件任务报错：{traceback.format_exc()}')
+                self.queue.task_done()
 
     @staticmethod
     async def plugin_transfer_thread(function_name, plugin_dict, data=None):
@@ -48,6 +49,10 @@ class PluginTransferThread(threading.Thread):
 
                         except Exception as e:
                             Log.error('error', f'调用插件 {plugin_file_path} 报错：{traceback.format_exc()}')
+
+
+thread = PluginTransferThread(task_queue)
+thread.start()
 
 
 async def plugin_transfer(function_name, plugin_dict, data=None):
