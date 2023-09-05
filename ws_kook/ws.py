@@ -242,10 +242,9 @@ async def connect_to_kook_server():
                                     f'接收到了kook传回的HELLO包，判断为连接成功，获取到的会话ID为：{data["d"]["session_id"]}')
                                 session_id = data["d"]["session_id"]
                                 if not init_stats:
-                                    Log.initialize('正在初始化所有插件...')
+                                    Log.initialize('开始初始化所有插件')
                                     await plugin_transfer('on_init', plugin_list)
                                     init_stats = True
-                                    Log.initialize('初始化所有插件完成！')
                                 else:
                                     Log.initialize('初始化已经执行过一次了，跳过初始化')
 
