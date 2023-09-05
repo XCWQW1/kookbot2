@@ -1,5 +1,6 @@
 import asyncio
 import configparser
+import datetime
 import time
 import traceback
 import zlib
@@ -216,61 +217,100 @@ async def connect_to_kook_server():
                     loop = asyncio.get_event_loop()
                     task = loop.create_task(ping_kook(websocket))
                     async for message in websocket:
-                        message = zlib.decompress(message)
-                        data = json.loads(message)
+                        try:
+                            message = zlib.decompress(message)
+                            data = json.loads(message)
 
-                        # DEBUG
-                        Log.diy_log('DEBUG', data)
-                        # DEBUG
+                            # DEBUG
+                            DEBUG = False
+                            if DEBUG:
+                                if str(data) == "{'s': 3}":
+                                    current_time = datetime.datetime.now()
+                                    new_time = current_time + datetime.timedelta(seconds=30)
+                                    formatted_time = new_time.strftime("%Y-%m-%d %H:%M:%S")
+                                    Log.diy_log('调试', str(data) + f'|下一次pong应位于[{str(formatted_time)}]左右')
+                                else:
+                                    Log.diy_log('调试', data)
+                            # DEBUG
 
-                        if data['s'] == 3:
-                            ping_stats = True
+                            if data['s'] == 3:
+                                ping_stats = True
 
-                        if data['s'] == 1 and data['d']['code'] == 0:
-                            link_status = 3
-                            Log.initialize(
-                                f'接收到了kook传回的HELLO包，判断为连接成功，获取到的会话ID为：{data["d"]["session_id"]}')
-                            session_id = data["d"]["session_id"]
-                            if not init_stats:
-                                Log.initialize('正在初始化所有插件...')
-                                await plugin_transfer('on_init', plugin_list)
-                                init_stats = True
-                                Log.initialize('初始化所有插件完成！')
-                            else:
-                                Log.initialize('初始化已经执行过一次了，跳过初始化')
+                            if data['s'] == 1 and data['d']['code'] == 0:
+                                link_status = 3
+                                Log.initialize(
+                                    f'接收到了kook传回的HELLO包，判断为连接成功，获取到的会话ID为：{data["d"]["session_id"]}')
+                                session_id = data["d"]["session_id"]
+                                if not init_stats:
+                                    Log.initialize('正在初始化所有插件...')
+                                    await plugin_transfer('on_init', plugin_list)
+                                    init_stats = True
+                                    Log.initialize('初始化所有插件完成！')
+                                else:
+                                    Log.initialize('初始化已经执行过一次了，跳过初始化')
 
-                            if sleep_time != 0:
-                                sleep_time = 0
-                                Log.diy_log('信息', 'ws连接成功！指数回退已重置为 0s')
+                                if sleep_time != 0:
+                                    sleep_time = 0
+                                    Log.diy_log('信息', 'ws连接成功！指数回退已重置为 0s')
 
-                        elif data['s'] == 1 and data['d']['code'] == 40103:
-                            Log.error('error',
-                                      f'您的TOKEN已过期，正在指数回退 {sleep_time}s 后将会重新获取Gateway并连接ws')
-                            time.sleep(sleep_time)
-                            await add_sleep_time()
+                            elif data['s'] == 1 and data['d']['code'] == 40103:
+                                Log.error('error',
+                                          f'您的TOKEN已过期，正在指数回退 {sleep_time}s 后将会重新获取Gateway并连接ws')
+                                time.sleep(sleep_time)
+                                await add_sleep_time()
 
-                        elif data['s'] == 1 and data['d']['code'] != 0:
-                            link_status = 1
-                            Log.error('error',
-                                      f'没有接收到kook传回的HELLO包，判断为连接超时，请检查网络或是DNS服务，正在指数回退 {sleep_time}s 后将会重新获取Gateway并连接ws')
-                            time.sleep(sleep_time)
-                            await add_sleep_time()
+                            elif data['s'] == 1 and data['d']['code'] != 0:
+                                link_status = 1
+                                Log.error('error',
+                                          f'没有接收到kook传回的HELLO包，判断为连接超时，请检查网络或是DNS服务，正在指数回退 {sleep_time}s 后将会重新获取Gateway并连接ws')
+                                time.sleep(sleep_time)
+                                await add_sleep_time()
 
-                        elif data['s'] == 5 and data['d']['code'] != 0:
-                            code = data['d']['code']
-                            if code == 40106:
-                                error_txt = 'resume 失败, 缺少参数'
-                            elif code == 40107:
-                                error_txt = '当前 session 已过期 (resume 失败, PING 的 sn 无效)'
-                            elif code == 40108:
-                                error_txt = '无效的 sn , 或 sn 已经不存在 (resume 失败, PING 的 sn 无效)'
-                            else:
-                                error_txt = f'未知错误 code：{code}'
+                            elif data['s'] == 5 and data['d']['code'] != 0:
+                                code = data['d']['code']
+                                if code == 40106:
+                                    error_txt = 'resume 失败, 缺少参数'
+                                elif code == 40107:
+                                    error_txt = '当前 session 已过期 (resume 失败, PING 的 sn 无效)'
+                                elif code == 40108:
+                                    error_txt = '无效的 sn , 或 sn 已经不存在 (resume 失败, PING 的 sn 无效)'
+                                else:
+                                    error_txt = f'未知错误 code：{code}'
 
-                            Log.error('error',
-                                      f'连接已失效，正在指数回退 {sleep_time}s 后将会重新获取Gateway并连接ws，原因：{error_txt}')
-                            time.sleep(sleep_time)
-                            await add_sleep_time()
+                                Log.error('error',
+                                          f'连接已失效，正在指数回退 {sleep_time}s 后将会重新获取Gateway并连接ws，原因：{error_txt}')
+                                time.sleep(sleep_time)
+                                await add_sleep_time()
+                                sn = 1
+                                wait_json = []
+                                link_status = 1
+                                try:
+                                    await websocket.close()
+                                except:
+                                    pass
+
+                            if data['s'] == 0:
+                                if wait_json:
+                                    if sn == wait_json[0]['sn']:
+                                        sn = wait_json[0]['sn'] + 1
+                                        if link_status == 3:
+                                            pass
+                                            await asyncio.gather(process_message(wait_json[0], plugin_list))
+                                        del wait_json[0]
+
+                                if sn == data['sn']:
+                                    sn = data['sn'] + 1
+                                    if link_status == 3:
+                                        pass
+                                        await asyncio.gather(process_message(data, plugin_list))
+                                else:
+                                    if data['sn'] > sn:
+                                        wait_json.append(data)
+
+                                if sn == 65536:
+                                    sn = 1
+                        except websockets.ConnectionClosedOK:
+                            Log.error('error', f"连接被主机强制关闭准备尝试重连:{traceback.format_exc()}")
                             sn = 1
                             wait_json = []
                             link_status = 1
@@ -278,25 +318,23 @@ async def connect_to_kook_server():
                                 await websocket.close()
                             except:
                                 pass
-
-                        if data['s'] == 0:
-                            if wait_json:
-                                if sn == wait_json[0]['sn']:
-                                    sn = wait_json[0]['sn'] + 1
-                                    if link_status == 3:
-                                        await asyncio.gather(process_message(wait_json[0], plugin_list))
-                                    del wait_json[0]
-
-                            if sn == data['sn']:
-                                sn = data['sn'] + 1
-                                if link_status == 3:
-                                    await asyncio.gather(process_message(data, plugin_list))
-                            else:
-                                if data['sn'] > sn:
-                                    wait_json.append(data)
-
-                            if sn == 65536:
-                                sn = 1
+                            try:
+                                task.cancel()
+                            except:
+                                pass
+                        except Exception as e:
+                            sn = 1
+                            wait_json = []
+                            link_status = 1
+                            try:
+                                await websocket.close()
+                            except:
+                                pass
+                            try:
+                                task.cancel()
+                            except:
+                                pass
+                            Log.error('error', f"框架运行出错:{traceback.format_exc()}")
 
         except Exception as e:
             Log.error('error', f"框架运行出错:{traceback.format_exc()}")
@@ -305,5 +343,9 @@ async def connect_to_kook_server():
             link_status = 1
             try:
                 await websocket.close()
+            except:
+                pass
+            try:
+                task.cancel()
             except:
                 pass
