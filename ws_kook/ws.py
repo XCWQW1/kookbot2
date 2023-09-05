@@ -222,7 +222,7 @@ async def connect_to_kook_server():
                             data = json.loads(message)
 
                             # DEBUG
-                            DEBUG = False
+                            DEBUG = True
                             if DEBUG:
                                 if str(data) == "{'s': 3}":
                                     current_time = datetime.datetime.now()

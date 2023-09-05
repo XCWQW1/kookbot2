@@ -1,8 +1,6 @@
 import configparser
 import json
-import traceback
 
-import requests
 import aiohttp
 
 from typing import Optional, Union

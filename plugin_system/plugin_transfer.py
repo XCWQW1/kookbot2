@@ -2,16 +2,31 @@ import asyncio
 import importlib
 import traceback
 import threading
+import queue
 
 from API.api_log import Log
 
 
 plugin_data_list = {}
+task_queue = queue.Queue()
 
 
 class PluginTransferThread(threading.Thread):
     def __init__(self):
-        threading.Thread.__init__(self)
+        threading.Thread.__init__(self, daemon=True)
+        self.queue = queue.Queue()
+
+    def run(self):
+        while True:
+            # 从队列中获取任务并执行
+            task = self.queue.get()
+            if task is None:
+                break
+            try:
+                asyncio.run(self.plugin_transfer_thread(*task))
+            except Exception as e:
+                Log.error('error', f'执行插件任务报错：{traceback.format_exc()}')
+            self.queue.task_done()
 
     @staticmethod
     async def plugin_transfer_thread(function_name, plugin_dict, data=None):
@@ -36,8 +51,7 @@ class PluginTransferThread(threading.Thread):
 
 
 async def plugin_transfer(function_name, plugin_dict, data=None):
-    plugin_thread = PluginTransferThread()
-    await plugin_thread.plugin_transfer_thread(function_name, plugin_dict, data)
+    task_queue.put((function_name, plugin_dict, data))
 
 
 async def plugins_date(plugin_dict):

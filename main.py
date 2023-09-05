@@ -3,6 +3,7 @@ import signal
 import sys
 import time
 
+from plugin_system.plugin_transfer import PluginTransferThread
 from API.api_kook import KOOKApi
 from API.api_log import LogSP
 from init.main_init import main_init
@@ -12,6 +13,8 @@ from colorama import init, Fore, Style
 
 # 初始化colorama
 init()
+thread = PluginTransferThread()
+thread.start()
 
 
 async def kook_bot():
