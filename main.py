@@ -22,10 +22,13 @@ async def kook_bot():
 async def main():
     current_time = time.time()
     now_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(current_time))
+    version = 'v1.2.4'
+    version_text = f"[{now_time}] [版本]" + ' ' + '当前框架运行的版本：' + version
+    print(version_text)
     art_text = text2art('XCBOT')
 
     # 拆分艺术字的每一行，并在每行前面添加当前时间
-    art_lines = art_text.split('\n')
+    art_lines = art_text.split('\n')[:5]
     art_with_time = [f"[{now_time}] [初始]" + ' ' + line for line in art_lines]
 
     # 将带有时间的每行重新组合成一个字符串
