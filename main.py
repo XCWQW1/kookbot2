@@ -1,4 +1,5 @@
 import asyncio
+import os
 import signal
 import sys
 import time
@@ -46,6 +47,8 @@ def signal_handler(sig, frame):
     logs = f"[{now_time_1}] [信息] 程序关闭"
     LogSP.print_log(logs)
     LogSP.save_log(logs)
+    pid = os.getpid()
+    os.kill(pid, signal.SIGKILL)
     sys.exit(0)
 
 
