@@ -185,6 +185,11 @@ async def connect_to_kook_server():
                             await websocket.close()
                         except:
                             pass
+                    try:
+                        loop.close()
+                        task.cancel()
+                    except:
+                        pass
 
                 break
 
