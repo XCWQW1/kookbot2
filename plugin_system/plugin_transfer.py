@@ -40,12 +40,9 @@ class PluginTransferThread(threading.Thread):
                     if function_name in plugin_def:
                         try:
                             if data is not None:
-                                task = await asyncio.create_task(plugin_def[function_name](data))
+                                task = asyncio.create_task(plugin_def[function_name](data))
                             else:
-                                task = await asyncio.create_task(plugin_def[function_name]())
-
-                            # 在后台运行任务对象，不堵塞自身
-                            await asyncio.sleep(0)
+                                task = asyncio.create_task(plugin_def[function_name]())
 
                         except Exception as e:
                             Log.error('error', f'调用插件 {plugin_file_path} 报错：{traceback.format_exc()}')
