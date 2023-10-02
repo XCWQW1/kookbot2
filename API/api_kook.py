@@ -108,6 +108,7 @@ class KOOKApi:
                 "content": send_msg,
                 "quote": quote
             }
+        print(post_data)
         if temp_target_id is not None:
             post_data['temp_target_id'] = temp_target_id
 
@@ -120,7 +121,7 @@ class KOOKApi:
                 Log.send(msg_type, send_msg, channel_id, request['data']['msg_id'])
             return request['data']['msg_id']
         else:
-            print(request)
+            Log.error('error', '[发送频道消息]' + str(request))
             return request['code']
 
     async def send_direct_msg(self, send_msg: str or json, msg_type: Optional[int] = 9, user_id: Optional[int] = None, quote: Optional[str] = None) -> str:
@@ -155,7 +156,7 @@ class KOOKApi:
                 Log.send(msg_type, send_msg, user_id, request['data']['msg_id'])
             return request['data']['msg_id']
         else:
-            print(request)
+            Log.error('error', '[发送私聊消息]' + str(request))
             return request['code']
 
     async def get_server_name(self, server_id: int) -> str:
@@ -171,7 +172,7 @@ class KOOKApi:
         if request['code'] == 0:
             return request['data']['name']
         else:
-            print(request)
+            Log.error('error', '[获取服务器名称]' + str(request))
             return request['code']
 
     async def upload_files(self, file_name: Union[str, bytes]) -> str:
@@ -203,11 +204,12 @@ class KOOKApi:
         if response_json['code'] == 0:
             return response_json['data']['url']
         else:
+            Log.error('error', '[上传文件]' + str(response_json))
             return response_json['code']
 
     async def add_reaction(self, msg_id: str, emoji: str) -> str:
         """
-        给指定消息添加指定emoji
+        给指定消息添加回应
         :param msg_id:  # 要添加的消息id
         :param emoji:  # 要添加的emoji
         :return:  # 成功后返回code
@@ -217,7 +219,11 @@ class KOOKApi:
             "emoji": emoji
         }
         request = await self.kook_http_api_post("/api/v3/message/add-reaction", post_data)
-        return request['code']
+        if request['code'] == 0:
+            return request['code']
+        else:
+            Log.error('error', '[添加回应]' + str(request))
+            return request['code']
 
     async def update_message(self, msg_id: str, new_msg: str, quote: Optional[str] = None) -> str:
         """
@@ -241,7 +247,7 @@ class KOOKApi:
 
         request = await self.kook_http_api_post("/api/v3/message/update", post_data)
         if request['code'] != 0:
-            print(request)
+            Log.error('error', '[]' + str(request))
         return request['code']
 
     async def game(self, type: int) -> dict:
@@ -262,6 +268,7 @@ class KOOKApi:
                 js_dict[js['id']] = js['name']
             return js_dict
         else:
+            Log.error('error', '[显示游戏列表]' + str(request))
             return {'code': request['code']}
 
     async def create_game(self, name: str) -> str:
@@ -279,7 +286,7 @@ class KOOKApi:
         if request['code'] == 0:
             return request['data']['id']
         else:
-            print(request)
+            Log.error('error', '[创建游戏]' + str(request))
             return request['code']
 
     #################
@@ -306,7 +313,7 @@ class KOOKApi:
         if request['code'] == 0:
             return request['data']
         else:
-            print(request)
+            Log.error('error', '[语音频道用户列表]' + str(request))
             return request['code']
 
     async def view_user(self, user_id: int) -> str:
@@ -319,7 +326,7 @@ class KOOKApi:
         if request['code'] == 0:
             return request['data']
         else:
-            print(request)
+            Log.error('error', '[获取用户信息]' + str(request))
             return request['code']
 
     async def offline_user(self) -> str:
@@ -328,7 +335,7 @@ class KOOKApi:
         if request['code'] == 0:
             return request['data']
         else:
-            print(request)
+            Log.error('error', '[下线]' + str(request))
             return request['code']
 
     async def get_me_info(self) -> str:
@@ -337,5 +344,5 @@ class KOOKApi:
         if request['code'] == 0:
             return request['data']
         else:
-            print(request)
+            Log.error('error', '[获取自身信息]' + str(request))
             return request['code']

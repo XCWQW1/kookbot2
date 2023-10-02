@@ -19,14 +19,13 @@
 
 - ### 1, 克隆本项目
   ```
-  git clone https://github.com/XCWQW1/XCBOT-KOOK.git
-  cd XCBOT-KOOK
+  git clone https://github.com/XCWQW1/kookbot2.git
   ```
 
 
 - ### 2, 安装所需库
 
-  ```pip install -r requirements.txt``` 
+  进入克隆后的目录执行```pip install -r requirements.txt``` 
 
 - ### 3, 创建或使用已有的KOOK机器人
   
@@ -67,9 +66,9 @@
     - [x] 引用频道消息
     - [x] 上传文件
     - [x] 添加回应
-    - [ ] 发送私聊消息
+    - [x] 发送私聊消息
   
-  - #### 框架API
+  - #### 框架外部调用
     - [x] http api （只有一个发送消息的api也算是吧？后面慢慢完善
     - [ ] 正向ws
     - [ ] 反向ws
