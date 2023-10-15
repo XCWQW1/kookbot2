@@ -115,17 +115,16 @@ async def test_4(data):
 
 # 处理按钮卡片按下
 async def message_button_click(data):
-    print(data)
-    await API.send_channel_msg('test', 9, 8182745819484970)
-    await API.send_channel_msg(f"{data['user']['nickname']} 按下了 {data['card']['value']}", 9, data['card']['channel_id'])
+    print('1')
+    await API.send_channel_msg(f"1", 1, data['card']['channel_id'])
 
 
 async def user_exit_server(data):
-    pass  # 累了 有时间在写 当有用户退出服务器会调用这个函数
+    pass  # 下面累了 有时间在写 当有用户退出服务器会调用这个函数
 
 
 async def user_join_server(data):
-    pass  # 同上，有人加入服务器调用
+    pass  # 有人加入服务器调用
 
 
 async def user_self_exit_server(data):
@@ -133,7 +132,7 @@ async def user_self_exit_server(data):
 
 
 async def user_self_join_server(data):
-    pass  # 同上，自己加入服务器调用
+    pass  # 自己加入服务器调用
 
 
 async def on_init():
