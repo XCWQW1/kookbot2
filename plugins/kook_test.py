@@ -24,14 +24,15 @@ PLUGIN_DATE = {
 @on_command('TEST-0', substring=False)
 async def test_0(data):
     msg = 'TEST-0! Hello World!'  # 要发送的消息，此处为提升可读单独赋值给变量后发送，可以直接写到下方API的msg里
-    await API.send_channel_msg(msg, 1, data['events']['channel_id'], data['events']['message_id'])  # 发送消息, channel_message_id 可不提供，不提供则不引用触发消息直接发送, 1为消息类型 详见KOOK官方文档 发送卡片时需json.dumps(json_data)
+    print('test_0')
+    print(await API.send_channel_msg(msg, 1, data['events']['channel_id'], data['events']['message_id']))
     # API.send_channel_msg(msg, 1, data['events']['channel_id'])  # 不引用
     # API.send_channel_msg('TEST! Hello World!', 1, data['events']['channel_id'], data['events']['message_id'])  # 直接写
 
 
 # 取最左边5个字
 @on_command('TEST ', substring=[True, 5])
-async def test_0(data, msg):  # data 和上面的一样，msg是除去触发词 TEST  后的内容空格也去了
+async def test_test(data, msg):  # data 和上面的一样，msg是除去触发词 TEST  后的内容空格也去了
     await asyncio.sleep(5)
     await API.send_channel_msg(msg, 1, data['events']['channel_id'], data['events']['message_id'])
     await API.send_direct_msg(msg, 9, data['user']['id'])
@@ -114,16 +115,16 @@ async def test_4(data):
 
 # 处理按钮卡片按下
 async def message_button_click(data):
-    await asyncio.sleep(5)
-    await API.send_channel_msg(f"{data['user']['nickname']} 按下了 {data['card']['value']}", 9, data['card']['channel_id'], data['card']['message_id'])
+    print('1')
+    await API.send_channel_msg(f"1", 1, data['card']['channel_id'])
 
 
 async def user_exit_server(data):
-    pass  # 累了 有时间在写 当有用户退出服务器会调用这个函数
+    pass  # 下面累了 有时间在写 当有用户退出服务器会调用这个函数
 
 
 async def user_join_server(data):
-    pass  # 同上，有人加入服务器调用
+    pass  # 有人加入服务器调用
 
 
 async def user_self_exit_server(data):
@@ -131,7 +132,7 @@ async def user_self_exit_server(data):
 
 
 async def user_self_join_server(data):
-    pass  # 同上，自己加入服务器调用
+    pass  # 自己加入服务器调用
 
 
 async def on_init():
