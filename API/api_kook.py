@@ -2,6 +2,7 @@ import configparser
 import json
 
 import aiohttp
+import requests
 
 from typing import Optional, Union
 
@@ -55,9 +56,7 @@ class KOOKApi:
             "X-Rate-Limit-Global": ""
         }
 
-        async with aiohttp.ClientSession() as session:
-            async with session.post(url, headers=headers, data=post_data) as response:
-                response_json = await response.json()
+        response_json = requests.post(url, headers=headers, data=post_data).json()
 
         return response_json
 
@@ -79,9 +78,7 @@ class KOOKApi:
             "X-Rate-Limit-Global": ""
         }
 
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, headers=headers, params=get_data) as response:
-                response_json = await response.json()
+        response_json = requests.get(url, headers=headers, params=get_data).json()
 
         return response_json
 
@@ -108,7 +105,6 @@ class KOOKApi:
                 "content": send_msg,
                 "quote": quote
             }
-        print(post_data)
         if temp_target_id is not None:
             post_data['temp_target_id'] = temp_target_id
 
