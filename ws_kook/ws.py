@@ -46,6 +46,8 @@ async def restart_connect(websocket):
     except:
         pass
 
+    await asyncio.sleep(10)
+
 
 #################################################
 # 一个websocket客户端，用于连接kook的websocket服务器 #
