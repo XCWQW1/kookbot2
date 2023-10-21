@@ -171,6 +171,22 @@ class KOOKApi:
             Log.error('error', '[获取服务器名称]' + str(request))
             return request['code']
 
+    async def get_channel_name(self, channel_id: int) -> str:
+        """
+        获取指定频道的名称
+        :param channel_id:  # 频道id
+        :return:  # 成功后返回频道名称
+        """
+        get_data = {
+            "target_id": channel_id
+        }
+        request = await self.kook_http_api_get("/api/v3/channel/view", get_data)
+        if request['code'] == 0:
+            return request['data']['name']
+        else:
+            Log.error('error', '[获取频道名称]' + str(request))
+            return request['code']
+
     async def upload_files(self, file_name: Union[str, bytes]) -> str:
         """
         上传文件

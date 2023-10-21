@@ -5,7 +5,10 @@ import threading
 import queue
 
 from API.api_log import Log
+from colorama import init, Fore
 
+# 初始化colorama
+init()
 
 plugin_data_list = {}
 task_queue = queue.Queue()
@@ -79,5 +82,5 @@ async def plugins_date(plugin_dict):
                 "dependencies": {}
             }
         plugin_data_list[plugin_name] = PLUGIN_DATE
-    Log.initialize(f'共成功获取到 {len(plugin_data_list)} 个插件的元数据')
+    Log.initialize(f'共成功获取到 {Fore.GREEN}{len(plugin_data_list)}{Fore.RESET} 个插件的元数据')
     return plugin_data_list
