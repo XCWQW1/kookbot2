@@ -23,18 +23,18 @@ async def main():
     current_time = time.time()
     now_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(current_time))
     version = 'v1.2.5'
-    version_text = f"[{now_time}] [版本]" + ' ' + '当前框架运行的版本：' + version
+    version_text = f"{Fore.LIGHTBLACK_EX}{now_time}{Fore.RESET} {Fore.GREEN}[版本]{Style.RESET_ALL}" + ' ' + '当前框架运行的版本：' + Fore.GREEN + version + Style.RESET_ALL
     print(version_text)
     art_text = text2art('XCBOT')
 
     # 拆分艺术字的每一行，并在每行前面添加当前时间
     art_lines = art_text.split('\n')[:5]
-    art_with_time = [f"[{now_time}] [初始]" + ' ' + line for line in art_lines]
+    art_with_time = [f"{Fore.LIGHTBLACK_EX}{now_time}{Fore.RESET}{Fore.GREEN} [初始]" + ' ' + line for line in art_lines]
 
     # 将带有时间的每行重新组合成一个字符串
     result = '\n'.join(art_with_time)
 
-    print(Fore.GREEN + result + Style.RESET_ALL)
+    print(result + Style.RESET_ALL)
     await main_init()
     await kook_bot()
 
@@ -47,7 +47,7 @@ def signal_handler(sig, frame):
     asyncio.create_task(off())
     current_time_1 = time.time()
     now_time_1 = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(current_time_1))
-    logs = f"[{now_time_1}] [信息] 程序关闭"
+    logs = f"{Fore.LIGHTBLACK_EX}{now_time_1}{Fore.RESET} [信息关闭] 框架已关闭"
     LogSP.print_log(logs)
     LogSP.save_log(logs)
     pid = os.getpid()

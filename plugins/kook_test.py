@@ -115,7 +115,7 @@ async def test_4(data):
 
 # 处理按钮卡片按下
 async def message_button_click(data):
-    print(await API.send_channel_msg("1", 1, 3756228056671873, data['card']['message_id']))
+    await API.send_channel_msg("OK", 1, 3756228056671873, data['card']['message_id'])
 
 
 async def user_exit_server(data):
@@ -132,10 +132,6 @@ async def user_self_exit_server(data):
 
 async def user_self_join_server(data):
     pass  # 自己加入服务器调用
-
-
-async def del_reaction(data):
-    print(data)
 
 
 async def on_init():

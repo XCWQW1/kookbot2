@@ -6,7 +6,7 @@ import importlib
 import importlib.util
 import traceback
 
-from colorama import init
+from colorama import init, Fore
 from API.api_log import Log
 from .plugin_transfer import plugins_date
 
@@ -55,10 +55,10 @@ async def get_plugins_functions_and_def():
             name = file_path.split('plugins\\')[1].replace('.py', '')
         else:
             name = file_path.split('plugins/')[1].replace('.py', '')
-        Log.initialize(f'找到插件：{name}')
+        Log.initialize(f'找到插件：{Fore.GREEN}{name}{Fore.RESET}')
         def_ls = await get_functions_from_file(file_path)
         plugin_dnf_list[plugin_num] = {'name': name, 'file_path': file_path, 'def': def_ls}
         plugin_num = plugin_num + 1
-    Log.initialize(f'寻找完毕，共计 {plugin_num} 个插件')
+    Log.initialize(f'寻找完毕，共计 {Fore.GREEN}{plugin_num}{Fore.RESET} 个插件')
     await plugins_date(plugin_dnf_list)
     return plugin_dnf_list

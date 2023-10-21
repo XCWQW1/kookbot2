@@ -1,5 +1,7 @@
+import asyncio
 import html
 import os
+import re
 import time
 
 from colorama import init, Fore, Style
@@ -24,7 +26,8 @@ class LogSP:
         if not os.path.exists('logs'):
             os.mkdir('logs')
         with open(f'logs/{LogSP.now_time_and_day_file}.log', 'a', encoding='utf-8') as f_0:
-            f_0.write(f"{logs}\n")
+            pattern = re.compile("\033\[[0-9;]*m")
+            f_0.write(f"{re.sub(pattern, '', logs)}\n")
 
     @staticmethod
     def print_log(logs):
@@ -34,7 +37,7 @@ class LogSP:
     @staticmethod
     def initialize(initialize_txt):
         log_sp = LogSP()
-        logs = f"[{log_sp.now_time()}] [初始] {initialize_txt}"
+        logs = f"{Fore.LIGHTBLACK_EX}{Log.now_time()}{Fore.RESET} {Fore.GREEN}[初始]{Fore.RESET} {initialize_txt}"
         print(logs)
         LogSP.save_log(logs)
 
@@ -49,13 +52,13 @@ class Log:
 
     @staticmethod
     def initialize(initialize_txt):
-        logs = f"[{Log.now_time()}] [初始] {initialize_txt}"
+        logs = f"{Fore.LIGHTBLACK_EX}{Log.now_time()}{Fore.RESET} {Fore.GREEN}[初始]{Fore.RESET} {initialize_txt}"
         print(logs)
         LogSP.save_log(logs)
 
     @staticmethod
     def diy_log(log_type, log_content):
-        logs = f"[{Log.now_time()}] [{log_type}] {log_content}"
+        logs = f"{Fore.LIGHTBLACK_EX}{Log.now_time()}{Fore.RESET} [{log_type}] {log_content}"
         print(logs)
         LogSP.save_log(logs)
 
@@ -87,6 +90,7 @@ class Log:
             msg_type = 'KMD'
         elif msg_type == 10:
             msg_type = '卡片'
+            data['events']['message'] = '[卡片]'
         elif msg_type == 255:
             msg_type = '系统'
         else:
@@ -94,7 +98,7 @@ class Log:
 
         if channel_type == "GROUP":
             if msg_type != '系统':
-                logs = f"[{Log.now_time()}] [信息] [频道] [接收] [{msg_type}] 服务器：[{target_name}({target_id})] 频道：[{guild_name}({guild_id})] [{data['user']['nickname']}-{data['user']['username']}({data['user']['id']})] : {html.unescape(data['events']['message'])} ({data['events']['message_id']})"
+                logs = f"{Fore.LIGHTBLACK_EX}{Log.now_time()}{Fore.RESET} {Fore.CYAN}[信息{Fore.RESET}{Fore.LIGHTBLACK_EX}|{Fore.RESET}{Fore.CYAN}频道]{Fore.RESET} {Fore.CYAN}[接收{Fore.RESET}{Fore.LIGHTBLACK_EX}|{Fore.RESET}{Fore.CYAN}{msg_type}]{Fore.RESET} {target_name}({target_id})-{guild_name}({guild_id}) {data['user']['nickname']}{Fore.LIGHTBLACK_EX}|{Fore.RESET}{data['user']['username']}({data['user']['id']}) : {html.unescape(data['events']['message'])} {Fore.LIGHTBLACK_EX}({data['events']['message_id']}){Fore.RESET}"
             else:
                 logs = None
         else:
@@ -108,6 +112,8 @@ class Log:
     # 发送 信息
     @staticmethod
     def send(send_type: int, send_msg: str, channel_id: int, channel_message_id: str):
+        from API.api_kook import KOOKApi
+        API = KOOKApi()
         if send_type == 1:
             send_type = '文字'
         elif send_type == 2:
@@ -122,11 +128,12 @@ class Log:
             send_type = 'KMD'
         elif send_type == 10:
             send_type = '卡片'
+            send_msg = '[卡片]'
         elif send_type == 255:
             send_type = '系统'
         else:
             send_type = '其他'
-        logs = f"[{Log.now_time()}] [信息] [发送] [{send_type}] {send_msg} ({channel_message_id}) -> 频道：{channel_id}"
+        logs = f"{Fore.LIGHTBLACK_EX}{Log.now_time()}{Fore.RESET} {Fore.CYAN}[信息{Fore.RESET}{Fore.LIGHTBLACK_EX}|{Fore.RESET}{Fore.CYAN}频道]{Fore.RESET} {Fore.CYAN}[发送{Fore.RESET}{Fore.LIGHTBLACK_EX}|{Fore.RESET}{Fore.CYAN}{send_type}]{Fore.RESET} {send_msg} ({channel_message_id}) -> {channel_id}"
         # 显示日志
         print(logs)
         LogSP.save_log(logs)
@@ -136,14 +143,14 @@ class Log:
     def error(error_type: str, error_txt: str):
         if error_type == "channel":
             # 设置日志内容
-            logs = Fore.RED + f"[{Log.now_time()}] [错误] [频道] {error_txt}" + Style.RESET_ALL
+            logs = f"{Fore.LIGHTBLACK_EX}{Log.now_time()}{Fore.RESET}{Fore.RED} [错误] [频道] {error_txt}" + Style.RESET_ALL
             # 显示日志
             print(logs)
             LogSP.save_log(logs)
 
         elif error_type == "error":
             # 设置日志内容
-            logs = Fore.RED + f"[{Log.now_time()}] [错误] {error_txt}" + Style.RESET_ALL
+            logs = f"{Fore.LIGHTBLACK_EX}{Log.now_time()}{Fore.RESET}{Fore.RED} [错误] {error_txt}" + Style.RESET_ALL
             # 显示日志
             print(logs)
             LogSP.save_log(logs)
